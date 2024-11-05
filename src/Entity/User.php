@@ -3,10 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use App\Validator\IsMailDomainValid;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -20,6 +22,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[Assert\Email]
+    #[IsMailDomainValid]
     private ?string $email = null;
 
     /**
@@ -32,21 +38,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank(message: 'Please enter your firstname')]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank(message: 'Please enter your lastname')]
     private ?string $lastname = null;
 
     #[ORM\Column]
+    #[Assert\Positive]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    #[Assert\GreaterThan(0)]
+    #[Assert\LessThan(120)]
+    #[Assert\Regex(pattern: '/^[0-9]*$/')]
     private ?int $age = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 15, max: 15)]
     private ?string $healthcareNumber = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank(message: "Please select a gender")]
+    #[Assert\Choice(choices: ['M', 'F'])]
+    #[Assert\Length(min: 1, max: 1)]
     private ?string $gender = null;
 
     public function getId(): ?int
